@@ -68,7 +68,6 @@ index.html 404.html
 
 #### 双向绑定流程：
   ``` 
-    <img src="https://user-gold-cdn.xitu.io/2017/5/23/04fdcd64ed41f762a7a495f73c0a2f86?imageView2/0/w/1280/h/960/format/webp/ignore-error/1"/>
     compile编译解析DOM节点 遍历节点匹配v-model指令绑定更新函数（callback（）就是innerHTML）找到订阅者，
     --->然后watcher方法中向dep添加watcher
     compile-->初始化视图层
@@ -77,3 +76,4 @@ index.html 404.html
     --->然后通过传入watcher的callback（dom.innerHTML）来渲染页面  
     
   ```
+  <img src="https://user-gold-cdn.xitu.io/2017/5/23/04fdcd64ed41f762a7a495f73c0a2f86?imageView2/0/w/1280/h/960/format/webp/ignore-error/1"/>
