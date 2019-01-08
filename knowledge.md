@@ -55,11 +55,15 @@ index.html 404.html
   在setter中如果数据变化，通知所有订阅者
   数据劫持Object.defineProperty()方法  
   Object.defineProperty(obj, prop, descriptor)：直接在一个对象上定义一个新属性，或者修改一个新属性，并返回这个对象  
+
   1.通过实现一个observer，实质是Object.defineProperty()方法设置get、set的来监听属性的变化，dep.notify()通知dep订阅器监听vue实例中的所有属性变化      
-  2.消息订阅器Dep容器，订阅器Dep主要负责收集订阅者(收集被监听的对象)(ps：Dep=[watcher1,watcher2,watcher3.....])
+
+  2.消息订阅器Dep容器，订阅器Dep主要负责收集订阅者(收集被监听的对象)(ps：Dep=[watcher1,watcher2,watcher3.....]) 
+
   3.订阅者Watcher在初始化的时候需要将自己添加进订阅器Dep中（只要在订阅者Watcher初始化的时候才需要添加订阅者到dep中）  
   流程当observer监听值发生改变时通知Dep订阅容器，在遍历Dep所有订阅者，然后触发Dep原型上的notify方法通知wather中判断新值与老值是否有变化  
+
   4.Compile编译解析Dom  
-    1.解析模板指令，并替换模板数据，初始化视图
-    2.将模板指令对应的节点绑定对应的更新函数，初始化相应的订阅器
-  ![avatar](https://user-gold-cdn.xitu.io/2017/5/23/04fdcd64ed41f762a7a495f73c0a2f86?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+      1.解析模板指令，并替换模板数据，初始化视图
+      2.将模板指令对应的节点绑定对应的更新函数，初始化相应的订阅器
+  ![GitHub](https://user-gold-cdn.xitu.io/2017/5/23/04fdcd64ed41f762a7a495f73c0a2f86?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
