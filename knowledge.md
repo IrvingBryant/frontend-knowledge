@@ -79,7 +79,7 @@ index.html 404.html
   <img src="https://user-gold-cdn.xitu.io/2017/5/23/04fdcd64ed41f762a7a495f73c0a2f86?imageView2/0/w/1280/h/960/format/webp/ignore-error/1"/>
 
 ## get 与 post 的区别
-  1.get:把参数包含在URL中。	 
+  1.get:把参数包含在URL中。  
   2.post：参数通过request-body传递参数，没有参数长度限制  
   3.get请求参数有长度限制而post没有长度限制  
   4.参数类型:get请求只接受ASCII字符，而post没有限制  
@@ -92,7 +92,7 @@ index.html 404.html
 
   CSRF:**跨站请求伪造**
   >  原理:受害者登录受信任网站A，并在本地生成Cookie，然后在访问危险网站B。  
-  防御：给每个表单加入随机 Token 进行验证，这样B页面无法获取A页面的 Token 导致请求验证失败，从而防止了 CSRF。  
+  防御：给每个表单加入随机 **Token**进行验证，这样B页面无法获取A页面的 Token 导致请求验证失败，从而防止了 CSRF。  
 
 ## [post 请求中 Content-Type](https://imququ.com/post/four-ways-to-post-data-in-http.html)    
   Content-Type 字段来获知请求中的消息主体是用何种方式编码，再对主体进行解析  
