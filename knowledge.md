@@ -125,5 +125,73 @@ index.html 404.html
   > 微任务  
     1.promise  
     2.process.nextTick
-    
+
+## [window.postMessage](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/postMessage)
+### 语法
+  <font color="yellow">otherWindow.postMessage(message, targetOrigin, [transfer]);  </font>
+
+  window.postMessage() 方法可以安全地实现跨源通信。  
+  通常，对于两个不同页面的脚本，只有当执行它们的页面位于具有相同的协（通常为https），  
+  端口号（443为https的默认值），以及主机  (两个页面的模数 Document.domain即域名设置为相同的值) 时  
+  window.postMessage() 方法被调用时，会在所有页面脚本执行完毕之后（e.g., 在该方法之后设置的事件、之前设置的timeout 事件,etc.）向目标窗口派发一个  MessageEvent 消息。 该MessageEvent消息有四个属性需要注意  
+  即：当执行完postMessage后，被接受数据的的窗口会执行Message事件
+  * message 属性表示该message 的类型； 
+  * data 属性为 window.postMessage 的第一个参数；
+  * origin 属性表示调用window.postMessage() 方法时调用页面的当前状态； 
+  * source 属性记录调用 window.postMessage() 方法的窗口信息。
+
+### 例子
+  ```
+  /*
+ * A窗口的域名是<http://example.com:8080>，以下是A窗口的script标签下的代码：
+ */
+
+var popup = window.open(...popup details...);
+
+// 如果弹出框没有被阻止且加载完成
+
+// 这行语句没有发送信息出去，即使假设当前页面没有改变location（因为targetOrigin设置不对）
+popup.postMessage("The user is 'bob' and the password is 'secret'",
+                  "https://secure.example.net");
+
+// 假设当前页面没有改变location，这条语句会成功添加message到发送队列中去（targetOrigin设置对了）
+popup.postMessage("hello there!", "http://example.org");
+
+function receiveMessage(event)
+{
+  // 我们能相信信息的发送者吗?  (也许这个发送者和我们最初打开的不是同一个页面).
+  if (event.origin !== "http://example.org")
+    return;
+
+  // event.source 是我们通过window.open打开的弹出页面 popup
+  // event.data 是 popup发送给当前页面的消息 "hi there yourself!  the secret response is: rheeeeet!"
+}
+window.addEventListener("message", receiveMessage, false);
+
+  ```
+```
+/*
+ * 弹出页 popup 域名是<http://example.org>，以下是script标签中的代码:
+ */
+
+//当A页面postMessage被调用后，这个function被addEventListenner调用
+function receiveMessage(event)
+{
+  // 我们能信任信息来源吗？
+  if (event.origin !== "http://example.com:8080")
+    return;
+
+  // event.source 就当前弹出页的来源页面
+  // event.data 是 "hello there!"
+
+  // 假设你已经验证了所受到信息的origin (任何时候你都应该这样做), 一个很方便的方式就是把enent.source
+  // 作为回信的对象，并且把event.origin作为targetOrigin
+  event.source.postMessage("hi there yourself!  the secret response " +
+                           "is: rheeeeet!",
+                           event.origin);
+}
+
+window.addEventListener("message", receiveMessage, false);
+```
+
     
