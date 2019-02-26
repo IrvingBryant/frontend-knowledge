@@ -208,4 +208,30 @@ window.addEventListener("message", receiveMessage, false);
   2. 页面结构清晰  
   3. 减少对主题标题的更改 
   4. 设置meta标签keyword等属性
-    
+
+## [common.js规范与es6模块的区别](https://juejin.im/post/5aaa37c8f265da23945f365c)
+  ### common.js规范
+  1. module.exports 与 exports
+  ```
+    //exports实质module.exports所以在导出node模块不可以 exports='....' 这样就覆盖了引用
+    exports= module.exports
+  ```
+  ### ES6模块
+  1. export 与 export.default 的区别
+  ``` 
+    //a.js
+    var a = 1;
+    function b (){...}
+    export {a}
+    export {b}
+    export default a
+    //b.js
+    import {a,b},x from './a.js'
+    console.log(a) //1
+    console.log(b) //function....
+    console.log(x) //1
+  ```
+  export 在文件中可以有多个，但是export.default（将模块按系统默认导出）只能有一个  
+  export 可以直接导出表达式而export.default不可以（export var a=1）
+  
+
