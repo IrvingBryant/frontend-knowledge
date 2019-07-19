@@ -233,5 +233,162 @@ window.addEventListener("message", receiveMessage, false);
   ```
   export 在文件中可以有多个，但是export.default（将模块按系统默认导出）只能有一个  
   export 可以直接导出表达式而export.default不可以（export var a=1）
+
+## bind的实现原理
+  ```
+    Function.prototype.mybind=funcion(context){
+      let self = this 
+      //获取到除了需要绑定的上下文以外的所有参数
+      let args = Array.protetype.slice.call(arguments,1)
+      return function (){
+        //额外参数执行bind后返回的方法传入参数
+        let fnArgs = Array.protetype.slice.call(arguments)
+        self.apply(context,fnArgs)
+      }
+    }
+    function a(age){
+      console.log(age)
+      console.log(this.name)
+    }
+    var b={
+      name:'sheyang'
+    }
+    a.mybind(b)('x')
+  ```
+
+  ```
+  function Animal(a,b){
+    console.log(a+b)
+　　　this.species = "动物";
+  }
+  function Cat(name,color){
+        console.log(arguments)
+  　　　　Animal.apply(this, arguments);
+  　　　　this.name = name;
+  　　　　this.color = color;
+        console.log(name)
+        console.log(color)
+  　　}
+  　　var cat1 = new Cat("大毛","黄色");
+    console.log(cat1)
+  　　alert(cat1.species); // 动物
+  //执行了两次apply 一次在构造函数继承的时候，将上下文绑定至cat作用域，第二次是new
+  //时将上下文绑定至new中新的创建一个对象上
+
+
+  ```
+## 继承
+  ```
+    //1.构造函数继承
+    //缺点：子类实例获取不到父类原型对象上的属性
+    function superType(){
+      this.a=[1,2,3,4]
+    }
+    superType.prototype.b = '我是父类原型上的属性'
+    function child(x,y){
+      superType.apply(this,arguments)
+      this.x = x
+      this.y = y
+    }
+    var c = new child ('sheyang','....')
+    var d = new child ('hehe','....')
+    c.a.push(5)
+    console.log(c)//{a:[1,2,3,4,5],x:'sheyang',y:'....'}
+    console.log(d)//{a:[1,2,3,4],x:'hehe',y:'....'}
+    console.log(c.b)//undefined 
+
+    // 2. 原型链继承
+    //缺点:由于父类上的属性是共享，子类的实例修改父类上的引用类型属性时，会影响其他子类实例
+    function superType(){
+      this.a=[1,2,3,4]
+    }
+    superType.prototype.b = '我是父类原型上的属性'
+    function child(x,y){
+      this.x = x
+      this.y = y
+    }
+    child.prototype = new superType()
+    var c = new child ('sheyang','....')
+    var d = new child ('hehe','....')
+    c.a.push(5)
+    console.log(c)//{a:[1,2,3,4,5],x:'sheyang',y:'....'}
+    console.log(d)//{a:[1,2,3,4,5],x:'hehe',y:'....'}
+    console.log(c.b)//我是父类原型上的属性 
+
+    //组合继承
+    //优点：解决了构造函数继承和原型链继承的缺点
+    //缺点：父类构造函数被执行两次1次是在子类中的apply第二次是在child.prototype = new superType()
+    //new中的也有apply。这样就会有子类的实例中已经存在了父类的属性，且子类的原型对象上也存在父类属性。
+    //会导致内存浪费
+    function superType(){ 
+      this.a=[1,2,3,4]
+    }
+    superType.prototype.b = '我是父类原型上的属性'
+    function child(x,y){
+      superType.apply(this,arguments)
+      this.x = x
+      this.y = y
+    }
+    child.prototype = new superType()
+    var c = new child ('sheyang','....')
+    var d = new child ('hehe','....')
+    c.a.push(5)
+    console.log(c)//{a:[1,2,3,4,5],x:'sheyang',y:'....'}
+    console.log(d)//{a:[1,2,3,4],x:'hehe',y:'....'}
+    console.log(c.b)//我是父类原型上的属性 
+
+    //寄生组合式继承
+    //特点：在组合式继承的基础上减少一次父类构造函数的执行，解决内存浪费问题
+    function superType(){ 
+      this.a=[1,2,3,4]
+    }
+    superType.prototype.b = '我是父类原型上的属性'
+    function child(x,y){
+      superType.apply(this,arguments)
+      this.x = x
+      this.y = y
+    }
+    //由于这一部会将子类原型上的constructor重写,所以我们要修复这一个问题.
+    child.prototype = superType.prototype
+    child.prototype.constructor = child
+    var c = new child ('sheyang','....')
+    var d = new child ('hehe','....')
+    c.a.push(5)
+    console.log(c)//{a:[1,2,3,4,5],x:'sheyang',y:'....'}
+    console.log(d)//{a:[1,2,3,4],x:'hehe',y:'....'}
+    console.log(c.b)//我是父类原型上的属性 
+
+    //原型式继承（es6:Object.create()）
+    //缺点无法传递参数
+    //对引用类型修改时，属性会被篡改
+    function create(obj){
+      var f = function(){}
+      f.prototype = obj
+      return new f()
+      //new 操作符是实际原理
+      //new f() = { 
+      // 	var obj={} 
+      // 	obj.__proto__ = f.prototype //建立原型链
+      // 	var result = f.apply(this,arguments)
+      //	return result
+      // }
+    }
+    var person = {
+      name: "Nicholas",
+      friends: ["Shelby", "Court", "Van"]
+    };
+    var anotherPerson = create(person);
+    anotherPerson.name = "Greg";
+    anotherPerson.friends.push("Rob");
+
+    var yetAnotherPerson = create(person);
+    yetAnotherPerson.name = "Linda";
+    yetAnotherPerson.friends.push("Barbie");
+    console.log(anotherPerson)
+    console.log(yetAnotherPerson)
+
+  ```
+
+
   
 
