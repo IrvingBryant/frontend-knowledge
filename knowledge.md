@@ -277,6 +277,42 @@ window.addEventListener("message", receiveMessage, false);
 
 
   ```
+## 实现apply与call
+  ```
+    //1.apply思路：将要改变this指向的方法挂到目标this上执行并返回
+    Function.prototype.myapply(context){
+      if(typeof this! == 'function'){
+        console.log('Not a function')
+        return 
+      }
+      context = context || window
+      context.fn = this
+      let result
+      //appy 传入的第二个参数为类数组所以arguments的length为2 第一个为上下文对象，第二个参数为传入///函数的参数
+      if(arguments[1]){
+        result = context.fn(...arguments[1])
+      }else{
+        result = context.fn()
+      }
+      delet context.fn
+      return result
+    }
+    //2.call思路：将要改变this指向的方法挂到目标this上执行并返回
+    Function.prototype.mycall(context){
+      if(typeof this ! == 'function'){
+        console.log('not a function ')
+        return 
+      }
+      context = context || window
+      context.fn = this
+      let args = [...arguments].slice(1)
+      let result = context.fn(...args)
+      delete context.fn
+      return result
+    }
+
+
+  ```
 ## 继承
   ```
     //1.构造函数继承
