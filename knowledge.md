@@ -424,6 +424,64 @@ window.addEventListener("message", receiveMessage, false);
     console.log(yetAnotherPerson)
 
   ```
+  ## es6 class 类
+  ```
+    class Point {
+      constructor() {
+        // ...
+      }
+
+      toString() {   //实例方法 挂载在原型对象上的是实例方法
+        // ...
+      }
+
+      toValue() {  //实例方法
+        // ...
+      }
+      static sayName(){  //静态方法
+
+      }
+    }
+
+    // 等同于
+
+    Point.prototype = {
+      constructor() {},
+      toString() {},
+      toValue() {},
+    };
+    //构造函数的prototype属性，在 ES6 的“类”上面继续存在。事实上，类的所有方法都定义在类的prototype属性上面。
+    point.prototype.constructor === point //true
+
+
+    //this的指向
+    class Logger（）{
+      printName(name='haha'){
+        this.print(`Hello${name}`)
+      }
+      print(text){
+        console.log(text)
+      }
+    }
+    const logger = new Logger()
+    const {printName} = logger
+    printName() // TypeError: Cannot read property 'print' of undefined
+    //class类中的this默认指向实例对象。 但是当单独出来用的时候this指向运行环境
+    //printName(name='haha'){
+    //   `use strict`
+    //    this.print(`Hello${name}`)
+    //  }
+    //
+    //在用于class 用的严格模式所以this指向undefined 本应该指向window
+
+    //单独时候时解决方法将this绑定到实例属性上
+    //constructor(){
+    //  this.printName = this.printName.bind(this)
+    //}
+  
+  
+
+  ```
 
 
   
