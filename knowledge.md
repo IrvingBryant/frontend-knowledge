@@ -466,7 +466,8 @@ window.addEventListener("message", receiveMessage, false);
     const logger = new Logger()
     const {printName} = logger
     printName() // TypeError: Cannot read property 'print' of undefined
-    //class类中的this默认指向实例对象。 但是当单独出来用的时候this指向运行环境
+    //class类中的this默认指向实例对象。 如果静态方法包含this关键字，这个this指的是类，而不是实例。 
+    // 但是当单独出来用的时候this指向运行环境
     //printName(name='haha'){
     //   `use strict`
     //    this.print(`Hello${name}`)
@@ -474,14 +475,38 @@ window.addEventListener("message", receiveMessage, false);
     //
     //在用于class 用的严格模式所以this指向undefined 本应该指向window
 
-    //单独时候时解决方法将this绑定到实例属性上
+    //单独时候时解决方法将this绑定到实例对象上
     //constructor(){
     //  this.printName = this.printName.bind(this)
     //}
-  
-  
 
+    //或者使用箭头函数
   ```
+
+  ## class 继承
+    ```
+    class ColorPoint extends Point {
+      constructor(x, y, color) {
+        this.x = x //ReferenceError
+        super(x, y); // 调用父类的constructor(x, y) super() === A.prototype.constructor.call(this)。
+        this.color = color;
+      }
+
+      toString() {
+        return this.color + ' ' + super.toString(); // 调用父类的toString()
+      }
+    }
+    //上面代码中，constructor方法和toString方法之中，都出现了super关键字，它在这里表示父类的构造函数，用来新建父类的this对象。
+    //注意点
+    // 1.子类中必须在constructor 中调用super方法  得到与父类同样的实例属性和方法，再加上子类自己的实例属性和方法。
+    // 2.只有调用super之后，才可以使用this关键字，否则会报错 
+    //3. super() 只能在子类的构造函数中用  第二种情况，super作为对象时，在普通方法中，指向父类的原型对象；在静态方法中，指向父类。
+
+    //super() 表示A.prototype.constructor.call(this)。 调用父类构造函数
+    //super 表示指向父类的原型对象所以定义在父类实例上的方法或属性，是无法通过super调用的
+    //super.print()虽然调用的是A.prototype.print()，但是A.prototype.print()内部的this指向子类B的实例，
+    //Object.getPrototypeOf(child) === father// ture 方法可以用来判断一个类是否继承了另一个类。
+    ```
 
 
   
