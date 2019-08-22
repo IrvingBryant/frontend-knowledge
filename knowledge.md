@@ -485,10 +485,10 @@ window.addEventListener("message", receiveMessage, false);
 
   ## class 继承
     ```
-    class ColorPoint extends Point {
+    class ColorPoint extends Point {   //父类可以看做是原型对象
       constructor(x, y, color) {
         this.x = x //ReferenceError
-        super(x, y); // 调用父类的constructor(x, y) super() === A.prototype.constructor.call(this)。
+        super(x, y); // 调用父类的constructor(x, y) super() === Point.prototype.constructor.call(this)。
         this.color = color;
       }
 
@@ -500,12 +500,40 @@ window.addEventListener("message", receiveMessage, false);
     //注意点
     // 1.子类中必须在constructor 中调用super方法  得到与父类同样的实例属性和方法，再加上子类自己的实例属性和方法。
     // 2.只有调用super之后，才可以使用this关键字，否则会报错 
-    //3. super() 只能在子类的构造函数中用  第二种情况，super作为对象时，在普通方法中，指向父类的原型对象；在静态方法中，指向父类。
+    //3. super() 只能在子类的构造函数中用 A.  第二种情况，super作为对象时，在普通方法中，指向父类的原型对象；在静态方法中，指向父类。
 
-    //super() 表示A.prototype.constructor.call(this)。 调用父类构造函数
+    // 第一种情况super() 表示A.prototype.constructor.call(this)。 调用父类构造函数
+    // 第二种情况，super作为对象时，在普通方法中，指向父类的原型对象；在静态方法中，指向父类。
     //super 表示指向父类的原型对象所以定义在父类实例上的方法或属性，是无法通过super调用的
     //super.print()虽然调用的是A.prototype.print()，但是A.prototype.print()内部的this指向子类B的实例，
     //Object.getPrototypeOf(child) === father// ture 方法可以用来判断一个类是否继承了另一个类。
+
+
+    class A {
+      constructor() {
+        this.x = 1;
+      }
+      static print() {
+        console.log(this.x);
+      }
+    }
+
+    class B extends A {
+      constructor() {
+        super();
+        this.x = 2;
+      }
+      static m() {
+        super.print();
+      }
+    }
+
+    B.x = 3;
+    B.m() // 3
+
+    //另外，在子类的静态方法中通过super调用父类的方法时，方法内部的this指向当前的子类，而不是子类的实例
+    //在子类的静态方法中调用super对象指向的是父类，普通方法中指向的父类的原型对象
+
     ```
 
 
