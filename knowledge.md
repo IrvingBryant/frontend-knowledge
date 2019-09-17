@@ -209,13 +209,36 @@ window.addEventListener("message", receiveMessage, false);
   3. 减少对主题标题的更改 
   4. 设置meta标签keyword等属性
 
-## [common.js规范与es6模块的区别](https://juejin.im/post/5aaa37c8f265da23945f365c)
-  ### common.js规范
-  1. module.exports 与 exports
+## [common.js规范与es6模块的区别](https://segmentfault.com/a/1190000010426778)
+  ### common.js规范 （node中使用多）
+  1. module.exports 与 exports  
+    exports = module.exports = {}  
+    exports 和 module.exports在一个node执行一个文件时，会给这个文件内生成一个 exports和module对象，  
+    而module又有一个exports属性。他们之间的关系如下图，都指向一块{}内存区域。    
+    <img src="./img/a.png"/>
+
+
   ```
-    //exports实质module.exports所以在导出node模块不可以 exports='....' 这样就覆盖了引用
-    exports= module.exports
+    //exports实质是module.exports的引用所以在导出node模块不可以 exports='....' 这样就覆盖了引用
+    let a = 100;
+
+    console.log(module.exports); //能打印出结果为：{}
+    console.log(exports); //能打印出结果为：{}
+
+    exports.a = 200; //这里辛苦劳作帮 module.exports 的内容给改成 {a : 200}
+
+    exports = '指向其他内存区'; //这里把exports的指向指走
+
+    //test.js
+
+    var a = require('/utils');
+    console.log(a) // 打印为 {a : 200} 
   ```
+  > 其实require()引用的是module.exports的指向的内存块内容,而exports只是module.exports的引用，辅助后者添加内容用的。  
+  
+  用白话讲就是，exports只辅助module.exports操作内存中的数据，辛辛苦苦各种操作数据完，累得要死，结果到最后真正被require出去的内容还是module.exports的，真是好苦逼啊。
+
+
   ### ES6模块
   1. export 与 export.default 的区别
   ``` 
@@ -226,7 +249,7 @@ window.addEventListener("message", receiveMessage, false);
     export {b}
     export default a
     //b.js
-    import {a,b},x from './a.js'
+    import { a , b } , x  from './a.js'
     console.log(a) //1
     console.log(b) //function....
     console.log(x) //1
@@ -234,6 +257,62 @@ window.addEventListener("message", receiveMessage, false);
   export 在文件中可以有多个，但是export.default（将模块按系统默认导出）只能有一个  
   export 可以直接导出表达式而export.default不可以（export var a=1）
 
+  > 1.export与export default均可用于导出常量、函数、文件、模块等  
+    2.在一个文件或模块中，export、import可以有多个，export default仅有一个  
+    3.通过export方式导出，在导入时要加{ }，export default则不需要  
+    4.export能直接导出变量表达式，export default不行。  
+    ```
+      'use strict'
+      //导出变量
+      export const a = '100';  
+
+      //导出方法
+      export const dogSay = function(){ 
+          console.log('wang wang');
+      }
+
+      //导出方法第二种
+      function catSay(){
+        console.log('miao miao'); 
+      }
+      export { catSay };
+
+      //export default导出
+      const m = 100;
+      export default m; 
+      //export defult const m = 100;// 这里不能写这种格式。
+    
+    ```  
+  ### [在webpack中存在使用require引用export defalut 或者export](https://juejin.im/post/5a2e5f0851882575d42f5609#comment)
+  > 在 babel5 时代，大部分人在用 require 去引用 es6 输出的 default，只是把 default 输出看作是一个模块的默认输出,所以 babel5 对这个逻辑做了 hack，如果一个 es6 模块只有一个 default 输出，那么在转换成 commonjs 的时候也一起赋值给 module.exports，即整个导出对象被赋值了 default 所对应的值.  
+  这样就不需要加 default，require('./a.js') 的值就是想要的 default值。
+
+      ```
+        //a.js
+        var a = 1
+        export defalut a
+        // b.js
+        require('./a.js').default;
+      ```
+
+  > 还有一个很重要的问题，一旦 a.js 文件里又添加了一个具名的输出，那么引入方就会出麻烦。  
+
+    ```
+      // a.js
+
+      export default 123;
+
+      export const a = 123; // 新增
+      
+      // b.js 
+
+      var foo = require('./a.js');
+      console.log(foo)
+      // 由之前的 输出 123
+      // 变成 { default: 123, a: 123 }
+
+    ```
+  > 所以 babel6 去掉了这个hack，这是个正确的决定，升级 babel6 后产生的不兼容问题 可以通过引入 [babel-plugin-add-module-exports](https://www.npmjs.com/package/babel-plugin-add-module-exports) 解决。
 ## bind的实现原理
   ```
     Function.prototype.mybind=funcion(context){
