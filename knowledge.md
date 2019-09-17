@@ -212,31 +212,33 @@ window.addEventListener("message", receiveMessage, false);
 ## [common.js规范与es6模块的区别](https://segmentfault.com/a/1190000010426778)
   ### common.js规范 （node中使用多）
   1. module.exports 与 exports  
-    exports = module.exports = {}  
-    exports 和 module.exports在一个node执行一个文件时，会给这个文件内生成一个 exports和module对象，  
-    而module又有一个exports属性。他们之间的关系如下图，都指向一块{}内存区域。    
-    <img src="./img/a.png"/>
+      exports = module.exports = {}  
+      exports 和 module.exports在一个node执行一个文件时，会给这个文件内生成一个 exports和module对象，  
+      而module又有一个exports属性。他们之间的关系如下图，都指向一块{}内存区域。 
+
+      <img src="./img/a.png"/>
 
 
-  ```
-    //exports实质是module.exports的引用所以在导出node模块不可以 exports='....' 这样就覆盖了引用
-    let a = 100;
+      ```
+        //exports实质是module.exports的引用所以在导出node模块不可以 exports='....' 这样就覆盖了引用
+        let a = 100;
 
-    console.log(module.exports); //能打印出结果为：{}
-    console.log(exports); //能打印出结果为：{}
+        console.log(module.exports); //能打印出结果为：{}
+        console.log(exports); //能打印出结果为：{}
 
-    exports.a = 200; //这里辛苦劳作帮 module.exports 的内容给改成 {a : 200}
+        exports.a = 200; //这里辛苦劳作帮 module.exports 的内容给改成 {a : 200}
 
-    exports = '指向其他内存区'; //这里把exports的指向指走
+        exports = '指向其他内存区'; //这里把exports的指向指走
 
-    //test.js
+        //test.js
 
-    var a = require('/utils');
-    console.log(a) // 打印为 {a : 200} 
-  ```
-  > 其实require()引用的是module.exports的指向的内存块内容,而exports只是module.exports的引用，辅助后者添加内容用的。  
-  
-  用白话讲就是，exports只辅助module.exports操作内存中的数据，辛辛苦苦各种操作数据完，累得要死，结果到最后真正被require出去的内容还是module.exports的，真是好苦逼啊。
+        var a = require('/utils');
+        console.log(a) // 打印为 {a : 200}  
+
+      ```
+> 其实require()引用的是module.exports的指向的内存块内容,而exports只是module.exports的引用，辅助后者添加内容用的。  
+
+    用白话讲就是，exports只辅助module.exports操作内存中的数据，辛辛苦苦各种操作数据完，累得要死，结果到最后真正被require出去的内容还是module.exports的，真是好苦逼啊。
 
 
   ### ES6模块
@@ -261,6 +263,7 @@ window.addEventListener("message", receiveMessage, false);
     2.在一个文件或模块中，export、import可以有多个，export default仅有一个  
     3.通过export方式导出，在导入时要加{ }，export default则不需要  
     4.export能直接导出变量表达式，export default不行。  
+
     ```
       'use strict'
       //导出变量
@@ -303,7 +306,7 @@ window.addEventListener("message", receiveMessage, false);
       export default 123;
 
       export const a = 123; // 新增
-      
+
       // b.js 
 
       var foo = require('./a.js');
