@@ -698,3 +698,10 @@ window.addEventListener("message", receiveMessage, false);
   闭包就是由函数创造的一个词法作用域，里面创建的变量被引用后，可以在这个词法环境之外自由使用。
   闭包通常用来创建内部变量，使得这些变量不能被外部随意修改，同时又可以通过指定的函数接口来操作。
 
+  ## VUEX 与 Redux 的区别
+  1. VUEX与Redux都是基于flux架构 （view、store、action）
+    Vuex 流程：  
+    view --->dispatch--->actions--->commit --->mutations --->state ---> view  
+    Redux流程：
+    view--->dispatch --->ations--->reduce --->state--->view  
+
