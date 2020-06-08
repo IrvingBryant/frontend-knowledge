@@ -321,10 +321,10 @@ window.addEventListener("message", receiveMessage, false);
     Function.prototype.mybind=funcion(context){
       let self = this 
       //获取到除了需要绑定的上下文以外的所有参数
-      let args = Array.protetype.slice.call(arguments,1)
+      //let args = Array.prototype.slice.call(arguments,1)
       return function (){
         //额外参数执行bind后返回的方法传入参数
-        let fnArgs = Array.protetype.slice.call(arguments)
+        let fnArgs = Array.prototype.slice.call(arguments)
         self.apply(context,fnArgs)
       }
     }
@@ -487,7 +487,7 @@ window.addEventListener("message", receiveMessage, false);
       //new f() = { 
       // 	var obj={} 
       // 	obj.__proto__ = f.prototype //建立原型链
-      // 	var result = f.apply(this,arguments)
+      // 	var result = f.apply(obj,arguments)
       //	return result
       // }
     }
@@ -642,5 +642,59 @@ window.addEventListener("message", receiveMessage, false);
   4. 合理利用 CSS 合成动画
   5. 避免频繁的垃圾回收
 
+  ## 刷新页面，JS 请求一般会有哪些地方有缓存处理？
+  1. DNS缓存
+  2. cdn缓存
+  3. 浏览器缓存
+  4. 服务器缓存
+
+  ## 一次完整的 HTTP 事务是怎么一个过程
+  1. 建立连接的三次握手   
+    1. 客户端发起建立连接请求。  
+    2. 服务端回复，收到，统一建立连接。  
+    3. 客户端回复收到服务端的回复   
+  2. 断开连接的四次挥手  
+    1. 客户端发起断开连接请求  
+    2. 服务端回复收到  
+    3. 服务端发起断开连接请求  
+    4. 客户端回复收到  
+
+  ## css有几种加载方式
+    1. link标签引入
+    2. @import 导入样式
+    3. 行内样式
+    4. 内嵌样式
+  ## 页面导入时，使用 link 和 @import 有什么区别？
+    1. link 是html标签 不仅仅可以引入css文件，@import 是css引入的语法
+    2. link 是页面在加载时同时加载，@import 等页面被加载完成时在加载css
+  ## src与href 的区别
+    src：代表资源、一般是用于下载文件  
+    href：表示与远程连接建立锚点，一般用于连接跳转  
+
+  ## BFC是什么？如何形成BFC，有什么作用?
+  1. BFC块级格式化上下文
+  ### 如何形成
+  1. 根元素  
+  2. float属性不为none  
+  3. position为absolute或fixed  
+  4. display为inline-block, table-cell, table-caption, flex, inline-flex  
+  5. overflow不为visible
+  ### 有什么作用
+  1. 清楚浮动
+  2. 避免垂直外边距叠加
   
+
+  ## 函数声明提升
+  1. 只有函数声明格式的函数才会存在函数声明提前，比如函数表达式，构造函数，都不存在函数声明提前。  
+    函数创建的三种写法：  
+    a.函数声明：function fun(a){console.log(a)};(只有这个家伙存在函数声明提前)
+
+    b.函数表达式：var fun = function(a){console.log(a)};
+
+    c.构造函数：var fun = new Function("a",console.log(a));
+  
+
+ ## 闭包
+  闭包就是由函数创造的一个词法作用域，里面创建的变量被引用后，可以在这个词法环境之外自由使用。
+  闭包通常用来创建内部变量，使得这些变量不能被外部随意修改，同时又可以通过指定的函数接口来操作。
 
