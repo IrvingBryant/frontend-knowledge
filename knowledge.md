@@ -705,3 +705,77 @@ window.addEventListener("message", receiveMessage, false);
     Redux流程：
     view--->dispatch --->ations--->reduce --->state--->view  
 
+
+## 函数累乘科里化
+  ```
+    function multiplication (){
+      var args = [].slice.apply(arguments)
+      var multer = function (){
+        var _mult=function(){
+          args.push(...arguments)
+          return _mult
+        }
+        //利用隐式转换的特性，当最后执行时隐式转换，并计算最终的值返回
+        _mult.toString=function(){
+          return args.reduce(function (a,b){
+            return a*b
+          })
+        }
+        return _mult
+      }
+      return multer()
+    }
+    var a = multiplication(1,2,3)(4)(2)
+  ```
+
+
+## 什么是BFC？什么条件下会触发？应用场景有哪些？
+  1. BFC块级格式上下文： 浮动元素和绝对定位元素，非块级盒子的块级容器（例如 inline-blocks, table-cells, 和 table-captions），以及overflow值不为"visiable"的块级盒子，都会为他们的内容创建新的BFC（Block Fromatting Context， 即块级格式上下文）。
+  2. 什么条件下会触发:  
+    ```
+      根元素()
+      浮动元素（元素的 float 不是 none）
+      绝对定位元素（元素的 position 为 absolute 或 fixed）
+      行内块元素（元素的 display 为 inline-block）
+      表格单元格（元素的 display为 table-cell，HTML表格单元格默认为该值）
+      表格标题（元素的 display 为 table-caption，HTML表格标题默认为该值）
+      匿名表格单元格元素（元素的 display为 table、table-row、 table-row-group、table-header-group、table-footer-group（分别是HTML table、row、tbody、thead、tfoot的默认属性）或 inline-table）
+      overflow 值不为 visible 的块元素 -弹性元素（display为 flex 或 inline-flex元素的直接子元素）
+      网格元素（display为 grid 或 inline-grid 元素的直接子元素） 等等
+    ```
+  3. BFC渲染规则： 
+    ```
+      1.BFC垂直方向边距重叠
+      2.BFC的区域不会与浮动元素的box重叠
+      3.BFC是一个独立的容器，外面的元素不会影响里面的元素
+      4.计算BFC高度的时候浮动元素也会参与计算（清楚浮动导致的高度塌陷）
+    ```
+
+  ## 导致前端页面白屏的原因
+    ```
+      原因：
+      1. scirpt脚本会阻塞Dom渲染
+      解决方案:
+      使用<script>元素的async或defer属性。  
+    ```
+
+  ## [promise 知识](https://juejin.im/post/5e58c618e51d4526ed66b5cf#heading-16)
+
+  1. Promise的状态一经改变就不能再改变。(见3.1)  
+  2. then和.catch都会返回一个新的Promise。(上面的👆1.4证明了)  
+  3. catch不管被连接到哪里，都能捕获上层未捕捉过的错误。(见3.2)  
+  4. 在Promise中，返回任意一个非 promise 的值都会被包裹成 promise 对象，例如return 2会被包装为return Promise.resolve(2)。  
+  5. Promise 的 .then 或者 .catch 可以被调用多次, 但如果Promise内部的状态一经改变，并且有了一个值，那么后续每次调用.then或者.catch的时候都会直接拿到该值。(见3.5)  
+  6. then 或者 .catch 中 return 一个 error 对象并不会抛出错误，所以不会被后续的 .catch 捕获。(见3.6)  
+  7. then 或 .catch 返回的值不能是 promise 本身，否则会造成死循环。(见3.7)  
+  8. then 或者 .catch 的参数期望是函数，传入非函数则会发生值透传。(见3.8)  
+  9. then方法是能接收两个参数的，第一个是处理成功的函数，第二个是处理失败的函数，再某些时候你可以认为catch是.then第二个参数的简便写法。(见3.9)  
+  10. finally方法也是返回一个Promise，他在Promise结束的时候，无论结果为resolved还是rejected，都会执行里面的回调函数。  
+
+  ## [this永远指向最后调用它的那个对象](https://juejin.im/post/5e6358256fb9a07cd80f2e70)
+
+  ## [掘金大佬面经](https://juejin.im/post/5eda38ebf265da7700281d57)
+
+  ## [闭包的概念以及使用场景](https://www.jianshu.com/p/97b9067a5450)
+  1. 对象设置私有变量通过特有方法才能修改访问、修改。
+  2. 采用函数引用方式的setTimeout调用
