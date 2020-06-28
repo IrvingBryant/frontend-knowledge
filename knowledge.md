@@ -756,7 +756,62 @@ window.addEventListener("message", receiveMessage, false);
       原因：
       1. scirpt脚本会阻塞Dom渲染
       解决方案:
-      使用<script>元素的async或defer属性。  
+      使用<script>元素的async或defer属性。 
+      defer:表示js执行时不会影响页面构造，既立即加载，延迟执行（脚本会在整个页面解析完毕后执行）。
+      async:只适用于外部脚本文件，也是下载js与html解析并行，异步执行会影响页面解析
+    ```
+    ## 如何计算页面白屏时间
+      1. 在head标签中执行js脚本记录 当前时间
+      2. 在body标签中最底部执行js脚本记录 当前时间。 
+      3. 做差值
+      4. 也可以使用performance对象
+  
+  ## onload与DomContentOnload 的区别
+    1. onload是在页面js、图片、样式全部加装完后执行
+    2. DOMContentOnload 是在dom 加载后执行所有优于onload
+
+  ## 路由hash模式与history模式的区别 
+    1. hash模式是带#号的本身是用来做页面定位的锚点的由于 hash 值变化不会导致浏览器向服务器发出请求而且hash改回会触发hashchange事件。
+    2. history 模式改变 url 的方式会导致浏览器向服务器发送请求 ，history模式参数不仅可以放在url中也可以放在特定对象中
+
+
+   ## css3 动画
+  
+
+  ## [浏览器缓存](https://segmentfault.com/a/1190000008377508)
+    1. Cache-Control 
+    ```
+      Cache-Control包括：max-age / s-maxage/public/private/no-cache/no-store/must-revalidate等
+      max-age:设置缓存最大生效时间  
+      s-maxage:设置共享资源缓存时间（cdn）
+      public：指定响应会被缓存，并且在多用户间共享
+      private：私有的，不能在用户间共享。
+      no-cache：指定不缓存响应，表明资源不进行缓存
+      no-store:禁止缓存
+      must-revalidate：告诉浏览器缓存过期后去服务器去取
+    ```
+    2. Expires 
+    ```
+      缓存过期时间，用来指定资源到期时间
+    ```
+    3. last-modified
+    ```
+      服务器文件最后修改时间，请求会向服务器发送报头，询问最后修改时间之后资源是否被修改，如呗修改返回200未修改返回304
+      发送if-modified-since 报文查询资源是否在节点上有修改
+    ```
+    4. ETAG
+    ```
+      根据实体内容生成一段hash字符串，标识资源的状态,验证资源是否已经修改
+      如果存在E-tag发送 if-none-match 如果资源未过期，服务器返回304 
+
+      etag 可以与 last-modified 一起使用 优先判断etag
+      
+    ```
+    5. 既生 last-modified 何生etag
+    ```
+      1. last-modified 精确到秒级，如果某些文件在1秒钟以内，被修改多次的话，它将不能准确标注文件的修改时间
+      2. 如果某些文件定期生成，但有时内容被没有改变，但last-modified的却改变，导致没法使用缓存
+      3. Etag是服务器自动生成或者由开发者生成的对应资源在服务器端的唯一标识符，能够更加准确的控制缓存。
     ```
 
   ## [promise 知识](https://juejin.im/post/5e58c618e51d4526ed66b5cf#heading-16)
@@ -772,6 +827,77 @@ window.addEventListener("message", receiveMessage, false);
   9. then方法是能接收两个参数的，第一个是处理成功的函数，第二个是处理失败的函数，再某些时候你可以认为catch是.then第二个参数的简便写法。(见3.9)  
   10. finally方法也是返回一个Promise，他在Promise结束的时候，无论结果为resolved还是rejected，都会执行里面的回调函数。  
 
+
+  ## 防抖、节流
+    1. 防抖 既触发事件后在N秒内只执行一次，如果在n秒内重新触发事件，则会重新计算函数执行时间。 
+
+    ```
+
+      // 非立即执行防抖，既最后一次才执行方法
+        function debounce(fn,wait){
+          var time 
+          return function(){
+            if(time) clearTimeout(time)
+            time = setTime(()=>{
+              fn(this,arguments)
+            },wait)
+          }
+        }
+
+      //立即执行防抖，既点击时第一就执行
+        function debounce(fn,wait){
+          var time 
+          return function(){
+            if(time) {
+              clearTimeout(time)
+            }else{
+              fn()
+            }
+            time=setTimeout(()=>{
+              time = null
+            },wait)
+          }
+        }
+    ```
+    2. 节流
+    ```
+      // 就是指连续触发事件但是在 n 秒中只执行一次函数。
+      function thottle(fn,wait){
+        var init=0
+        return function(){
+          var now = new Date()
+          if( now-init > wait){
+            fn()
+            init = now
+          }
+        }
+      }
+    ```
+
+  ## fetch 与 ajax 的区别
+    1. fetch是基于promise的一种前后端通信技术，解决了ajax的回调地狱的问题
+    2. fetch 请求返回状态码为400 500时也不会被标记为reject()，而是标记为resovle，仅当网络故障时才会标记为reject
+    3. fetch 默认是不带cookie的所以需要配置credentials属性
+
+  ## [http2.0 与 http1.0的 区别](https://mp.weixin.qq.com/s/GICbiyJpINrHZ41u_4zT-A?)
+    1. 采用二进制格式传输
+      ```
+        http1.0是基于文本的，http2.0 采用二进制格式传输
+      ```
+    2. 多路复用
+       ```
+        就是连接共享 每一个请求对应一个ID，一个连接上可以有多个请求，接收方根据ID将请求归属到各自的服务器
+       ```
+    3. header压缩
+      ```
+        通讯双方各自cache了一份header fields表，避免了header重复传输，又减少了需要传输的大小
+      ```
+    4. 服务端推送
+  ## 多路复用与长连接的区别
+    ```
+      多路复用：多个请求可以在一个连接上并行执行，当一个请求超时时，不会影响其他连接正常执行
+      长连接：多个请求串行处理，当一个请求超时，会影响阻塞其他的请求。
+    ```
   ## [this永远指向最后调用它的那个对象](https://juejin.im/post/5e6358256fb9a07cd80f2e70)
 
   ## [掘金大佬面经](https://juejin.im/post/5eda38ebf265da7700281d57)

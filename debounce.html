@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    #a{
+      width: 200px;
+      height: 200px;
+      background: red;
+    }
+  </style>
+</head>
+<body>
+  <div id ='a'></div>
+  
+
+  <script>
+    var dom = document.getElementById('a');
+    function debouncd(fn,wait){
+      var timeout 
+      return function(){
+        if(!timeout){
+          timeout = setTimeout(()=>{
+            fn()
+            timeout = clearTimeout(timeout)
+          },wait)
+        }
+      }
+    }
+
+    function debouncea(func, wait) {
+        let timeout;
+        return function () {
+            let context = this;
+            let args = arguments;
+            console.log(timeout)
+            if (timeout) clearTimeout(timeout);
+            
+            timeout = setTimeout(() => {
+              console.log(timeout)
+                func.apply(context, args)
+            }, wait);
+        }
+    }
+
+    function debounce(func,wait) {
+    let timeout;
+    return function () {
+        let context = this;
+        let args = arguments;
+
+        if (timeout) clearTimeout(timeout);
+        console.log(timeout)
+        let callNow = !timeout;
+        timeout = setTimeout(() => {
+            timeout = null;
+        }, wait)
+
+        if (callNow) func.apply(context, args)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // //非立即执行，最后一次点击完后才执行
+  //   function deboune(fn,wait){
+  //     var timeout
+  //     return function(){
+  //       if(timeout) clearTimeout(timeout)
+  //       timeout = setTimeout(()=>{
+  //         fn(this,arguments)
+  //       },wait)
+  //     }
+  //   }
+
+
+  //   // 立即执行的防抖函数，点击时第一次就触发
+  //   function debounc(fn,wait){
+  //     var timeout
+  //     return function(){
+  //       if(timeout) clearTimeout(timeout)
+  //       var flag = !timeout 
+  //       timeout = setTimeout(()=>{
+  //         timeout = null
+  //       },wait)
+  //       if(flag) fn.apply(this,arguments)
+  //     }
+  //   }
+
+
+  //节流：就是执行完后记录当前时间在过一段时间后才会下次执行
+  function throttle(fn,wait){
+    var inittime = 0
+    return function(){
+      var time = new Date()
+      if(time-inittime > wait){
+        fn()
+        inittime = time 
+      }
+    }
+  }
+
+    dom.onclick= throttle(()=>{
+        console.log('111111')
+      },1000)
+
+  </script>
+</body>
+</html>
